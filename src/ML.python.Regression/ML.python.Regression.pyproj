@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="dataset_analysis.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="dataset_preparation.py">
       <SubType>Code</SubType>
     </Compile>

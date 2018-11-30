@@ -1,5 +1,4 @@
-﻿using ML.dotnet.Regression.Algorithms;
-using System;
+﻿using System;
 using ML.dotnet.Regression.Models;
 
 namespace ML.dotnet.Regression
@@ -8,10 +7,6 @@ namespace ML.dotnet.Regression
     {
         static void Main(string[] args)
         {
-            //TaxiFareRegression.Run();
-
-            FastTree.FastTreeRegression();
-
             HousingRegression.Run();
             Console.Read();
 
