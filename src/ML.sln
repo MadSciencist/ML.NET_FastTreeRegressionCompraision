@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BD0C0173-B4FE-4E1C-A9DE-95C2D8BBC8C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet", "dotnet", "{39B2C376-7832-4B21-9395-795ADE3769A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "python", "python", "{8DD1807C-092D-42BF-BFA5-4EAD6FD906BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ML.dotnet.Regression", "ML.dotnet.Regression\ML.dotnet.Regression.csproj", "{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ML.python.Regression", "ML.python.Regression\ML.python.Regression.pyproj", "{7715AD8A-D0F3-4690-8690-CFD77555CCFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7715AD8A-D0F3-4690-8690-CFD77555CCFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7715AD8A-D0F3-4690-8690-CFD77555CCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{39B2C376-7832-4B21-9395-795ADE3769A5} = {BD0C0173-B4FE-4E1C-A9DE-95C2D8BBC8C6}
+		{8DD1807C-092D-42BF-BFA5-4EAD6FD906BE} = {BD0C0173-B4FE-4E1C-A9DE-95C2D8BBC8C6}
+		{4F4EA3C2-8947-4F7E-AEA6-B54D3D12F2A7} = {39B2C376-7832-4B21-9395-795ADE3769A5}
+		{7715AD8A-D0F3-4690-8690-CFD77555CCFA} = {8DD1807C-092D-42BF-BFA5-4EAD6FD906BE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1FB6C7F-3613-41B3-BF4B-DF442720BD2B}
+	EndGlobalSection
+EndGlobal
