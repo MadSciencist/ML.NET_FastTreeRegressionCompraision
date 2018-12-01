@@ -31,7 +31,8 @@ namespace ML.dotnet.Regression.Models
                         new TextLoader.Column("households", DataKind.R4, 6),
                         new TextLoader.Column("median_income", DataKind.R4, 7),
                         new TextLoader.Column("median_house_value", DataKind.R4, 8),
-                        new TextLoader.Column("<1H OCEAN,INLAND", DataKind.R4, 9),
+                        new TextLoader.Column("<1H OCEAN", DataKind.R4, 9),
+                        new TextLoader.Column("INLAND", DataKind.R4, 9),
                         new TextLoader.Column("ISLAND", DataKind.R4, 10),
                         new TextLoader.Column("NEAR BAY", DataKind.R4, 11),
                         new TextLoader.Column("NEAR OCEAN", DataKind.R4, 12),
@@ -41,15 +42,15 @@ namespace ML.dotnet.Regression.Models
             var trainData = reader.Read(_trainDataPath);
             var testData = reader.Read(_testDataPath);
 
-            // Build the training pipeline
+            //Build the training pipeline
             var pipeline = mlContext.Transforms.Concatenate("Features", "longitude", "latitude", "housing_median_age",
                     "total_rooms", "total_bedrooms", "population",
-                    "households", "median_income", "<1H OCEAN,INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
-                .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features"));
+                    "households", "median_income", "<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
+                .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features",
+                    numLeaves: 20, numTrees: 20, minDatapointsInLeafs: 1, learningRate: 0.2D));
 
             // Train the model
             var model = pipeline.Fit(trainData);
-
             // Now run the 5-fold cross-validation experiment, using the same pipeline
             var cvResults = mlContext.Regression.CrossValidate(trainData, pipeline, numFolds: 10, labelColumn: "median_house_value");
 
@@ -67,6 +68,28 @@ namespace ML.dotnet.Regression.Models
             Console.WriteLine($"*       Squared loss: {metrics.L2:#.##}");
             Console.WriteLine($"*       RMS loss: {metrics.Rms:#.##}");
             Console.WriteLine($"*************************************************");
+
+            var predictor = model.MakePredictionFunction<HousingModel, HousingPrediction>(mlContext);
+
+            var prediction = predictor.Predict(new HousingModel
+            {
+                longitude = -117.24f,
+                latitude = 32.79f,
+                housing_median_age = 20f,
+                total_rooms = 961.0f,
+                total_bedrooms = 278.0f,
+                population = 525.0f,
+                households = 254.0f,
+                median_income = 3.1838f,
+                median_house_value = 0f,
+                Ocean1h = 0,
+                INLAND = 0,
+                ISLAND = 0,
+                NearBay = 0,
+                NearOceam = 1
+            });
+
+            Console.WriteLine($"Prediction: {prediction.Prediction}");
         }
     }
 }

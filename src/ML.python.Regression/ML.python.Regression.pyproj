@@ -28,7 +28,13 @@
     <Compile Include="dataset_preparation.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="hyperparameter_search.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Program.py" />
+    <Compile Include="utils.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

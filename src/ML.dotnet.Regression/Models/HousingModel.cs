@@ -7,47 +7,47 @@ namespace ML.dotnet.Regression.Models
 {
     public class HousingModel
     {
-        [Column("0")]
-        public float MedianHomeValue;
+        [Column("0", name: "longitude")]
+        public float longitude;
 
-        [Column("1")]
-        public float CrimesPerCapita;
+        [Column("1", name: "latitude")]
+        public float latitude;
 
-        [Column("2")]
-        public float PercentResidental;
+        [Column("2", name: "housing_median_age")]
+        public float housing_median_age;
 
-        [Column("3")]
-        public float PercentNonRetail;
+        [Column("3", name: "total_rooms")]
+        public float total_rooms;
 
-        [Column("4")]
-        public float CharlesRiver;
+        [Column("4", name: "total_bedrooms")]
+        public float total_bedrooms;
 
-        [Column("5")]
-        public float NitricOxides;
+        [Column("5", name: "population")]
+        public float population;
 
-        [Column("6")]
-        public float RoomsPerDwelling;
+        [Column("6", name: "households")]
+        public float households;
 
-        [Column("7")]
-        public float PercentPre40s;
+        [Column("7", name: "median_income")]
+        public float median_income;
 
-        [Column("8")]
-        public float EmploymentDistance;
+        [Column("8", name: "median_house_value")]
+        public float median_house_value;
 
-        [Column("9")]
-        public float HighwayDistance;
+        [Column("9", name: "<1H OCEAN")]
+        public float Ocean1h;
 
-        [Column("10")]
-        public float TaxRate;
+        [Column("10", name: "INLAND")]
+        public float INLAND;
 
-        [Column("11")]
-        public float TeacherRatio;
+        [Column("11", name: "ISLAND")]
+        public float ISLAND;
 
-        [Column("12")]
-        public float BlackIndex;
+        [Column("12", name: "NEAR BAY")]
+        public float NearBay;
 
-        [Column("13")]
-        public float PercentLowIncome;
+        [Column("13", name: "NEAR OCEAN")]
+        public float NearOceam;
     }
 
     public class HousingPrediction
