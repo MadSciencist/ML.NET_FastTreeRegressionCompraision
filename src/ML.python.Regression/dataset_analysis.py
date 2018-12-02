@@ -9,6 +9,14 @@ housing = pd.read_csv('../../datasets/housing.csv')
 housing_train = pd.read_csv('../../datasets/housing_train_70.csv')
 housing_test = pd.read_csv('../../datasets/housing_test_30.csv')
 
+op_count = housing['ocean_proximity'].value_counts()
+plt.figure(figsize=(10,5))
+sns.barplot(op_count.index, op_count.values, alpha=0.7)
+plt.title('Ocean Proximity Summary')
+plt.ylabel('Number of Occurrences', fontsize=12)
+plt.xlabel('Ocean Proximity', fontsize=12)
+plt.show()
+
 housing.hist(bins=20, figsize=(8, 18))
 housing.plot(kind='scatter', x='longitude', y='latitude', alpha=0.1)
 plt.show()
@@ -19,7 +27,20 @@ corr_matrix = housing.corr()
 corr_matrix['median_house_value'].sort_values(ascending=False)
 
 attributes = ['longitude','latitude','housing_median_age','total_rooms','total_bedrooms','population','households','median_income','median_house_value','ocean_proximity']
-scatter_matrix(housing[attributes], figsize=(3,3))
+sm = scatter_matrix(housing[attributes], figsize=(10,10), alpha=0.2)
+
+#Change label rotation
+[s.xaxis.label.set_rotation(45) for s in sm.reshape(-1)]
+[s.yaxis.label.set_rotation(0) for s in sm.reshape(-1)]
+
+#May need to offset label when rotating to prevent overlap of figure
+[s.get_yaxis().set_label_coords(-0.85,0.5) for s in sm.reshape(-1)]
+[s.get_xaxis().set_label_coords(-0.15,0) for s in sm.reshape(-1)]
+
+#Hide all ticks
+[s.set_xticks(()) for s in sm.reshape(-1)]
+[s.set_yticks(()) for s in sm.reshape(-1)]
+
 plt.show()
 
 encoder = LabelBinarizer()

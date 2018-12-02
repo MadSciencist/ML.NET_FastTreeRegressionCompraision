@@ -2,8 +2,11 @@
 using Microsoft.ML.Runtime.Data;
 using Microsoft.ML.StaticPipe;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.ML.Runtime.Api;
 
 namespace ML.dotnet.Regression.Models
 {
@@ -13,6 +16,7 @@ namespace ML.dotnet.Regression.Models
         {
             string _trainDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_train_70.csv");
             string _testDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_test_30.csv");
+            string resultsPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\results", "dotnet_results.csv");
 
             var mlContext = new MLContext();
 
@@ -43,11 +47,16 @@ namespace ML.dotnet.Regression.Models
             var testData = reader.Read(_testDataPath);
 
             //Build the training pipeline
+            //var pipeline = mlContext.Transforms.Concatenate("Features", "longitude", "latitude", "housing_median_age",
+            //        "total_rooms", "total_bedrooms", "population",
+            //        "households", "median_income", "<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
+            //    .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features",
+            //        numLeaves: 19, numTrees: 10, minDatapointsInLeafs: 1, learningRate: 0.2D));
+
             var pipeline = mlContext.Transforms.Concatenate("Features", "longitude", "latitude", "housing_median_age",
                     "total_rooms", "total_bedrooms", "population",
                     "households", "median_income", "<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
-                .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features",
-                    numLeaves: 20, numTrees: 20, minDatapointsInLeafs: 1, learningRate: 0.2D));
+                .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features"));
 
             // Train the model
             var model = pipeline.Fit(trainData);
@@ -55,10 +64,11 @@ namespace ML.dotnet.Regression.Models
             var cvResults = mlContext.Regression.CrossValidate(trainData, pipeline, numFolds: 10, labelColumn: "median_house_value");
 
             var microAccuracies = cvResults.Select(r => r.metrics.RSquared);
-            Console.WriteLine(microAccuracies.Average());
+            Console.WriteLine($"{microAccuracies.Average()} +-  {GetStandardDeviation(microAccuracies.ToList())}");
 
             // Compute quality metrics on the test set
             var metrics = mlContext.Regression.Evaluate(model.Transform(testData), label: "median_house_value");
+
             Console.WriteLine($"*************************************************");
             Console.WriteLine($"*       Metrics for Fast tree          ");
             Console.WriteLine($"*------------------------------------------------");
@@ -69,27 +79,47 @@ namespace ML.dotnet.Regression.Models
             Console.WriteLine($"*       RMS loss: {metrics.Rms:#.##}");
             Console.WriteLine($"*************************************************");
 
+
+            /* evaluate model with train data */
+            var evaluated = new List<Tuple<float, float>>();
             var predictor = model.MakePredictionFunction<HousingModel, HousingPrediction>(mlContext);
+            var testEnumerable = testData.AsEnumerable<HousingModel>(false);
 
-            var prediction = predictor.Predict(new HousingModel
+            foreach (var testItem in testEnumerable)
             {
-                longitude = -117.24f,
-                latitude = 32.79f,
-                housing_median_age = 20f,
-                total_rooms = 961.0f,
-                total_bedrooms = 278.0f,
-                population = 525.0f,
-                households = 254.0f,
-                median_income = 3.1838f,
-                median_house_value = 0f,
-                Ocean1h = 0,
-                INLAND = 0,
-                ISLAND = 0,
-                NearBay = 0,
-                NearOceam = 1
-            });
+                var prediction = predictor.Predict(testItem);
+                evaluated.Add(new Tuple<float, float>(testItem.median_house_value, prediction.Prediction));
+            }
 
-            Console.WriteLine($"Prediction: {prediction.Prediction}");
+            SaveCsv(resultsPath, evaluated);
+
+            Console.WriteLine("Done");
+        }
+
+        private static void SaveCsv(string resultsPath, List<Tuple<float, float>> evaluated)
+        {
+            using (var file = File.CreateText(resultsPath))
+            {
+                file.WriteLine("dotnet_test,dotnet_pred");
+
+                foreach (var item in evaluated)
+                {
+                    file.WriteLine($"{item.Item1:#.#},{item.Item2:#.#}");
+                }
+            }
+        }
+
+        private static double GetStandardDeviation(List<double> doubleList)
+        {
+            var average = doubleList.Average();
+            var sumOfDerivation = 0.0;
+            foreach (var value in doubleList)
+            {
+                sumOfDerivation += (value) * (value);
+            }
+            var sumOfDerivationAverage = sumOfDerivation / (doubleList.Count);
+
+            return Math.Sqrt(sumOfDerivationAverage - (average * average));
         }
     }
 }

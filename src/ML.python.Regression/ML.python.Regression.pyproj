@@ -31,6 +31,9 @@
     <Compile Include="hyperparameter_search.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="plot_results.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Program.py" />
     <Compile Include="utils.py">
       <SubType>Code</SubType>

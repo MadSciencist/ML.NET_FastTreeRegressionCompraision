@@ -12,6 +12,7 @@ def split_and_save_housing():
 
     # drop old un-encoded colum
     housing = housing.drop('ocean_proximity', axis=1)
+    hosuing = housing.dropna()
 
     # 30% for testing with some randomness
     train_set, test_set = train_test_split(housing, test_size=0.3, random_state=42)

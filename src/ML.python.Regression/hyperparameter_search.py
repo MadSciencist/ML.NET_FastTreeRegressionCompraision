@@ -8,27 +8,27 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV
 
-train_set = pd.read_csv('../../datasets/housing_train_70.csv')
-test_set = pd.read_csv('../../datasets/housing_test_30.csv')
+def main():
+    train_set = pd.read_csv('../../datasets/housing_train_70.csv')
 
+    train_y = train_set['median_house_value']
+    train_X = train_set.drop('median_house_value', axis=1)
 
-train_y = train_set['median_house_value']
-train_X = train_set.drop('median_house_value', axis=1)
-test_y = test_set['median_house_value']
-test_X = test_set.drop('median_house_value', axis=1)
+    #numTrees                   max_depth
+    #minDatapointsInLeafs        min_samples_leaf
+    #numLeaves               max_leaf_nodes
 
-tree_regressor = DecisionTreeRegressor(random_state=0)
+    tree_regressor = DecisionTreeRegressor(random_state=0)
 
-# Create regularization penalty space
-max_depth = [20, 50, 70, 110] #numTrees
-min_samples_leaf = [3, 4, 6, 10] #minDatapointsInLeafs
-max_leaf_nodes = [5, 10, 15, 20, 25] #numLeaves
+    param_grid = {'max_depth': [5, 10, 20, 50, 100, 200, None],
+                  'min_samples_leaf': np.arange(start=1, stop=15, step=2),
+                  'max_leaf_nodes': np.arange(start=5, stop=20, step=2)}
 
-# Create hyperparameter options
-hyperparameters = dict(max_depth=max_depth, min_samples_leaf=min_samples_leaf, max_leaf_nodes=max_leaf_nodes)
+    tree_reg_grid = GridSearchCV(tree_regressor, param_grid, cv=10, verbose=1, n_jobs=4)
+    best_model = tree_reg_grid.fit(train_X, train_y)
 
-tree_reg_grid = GridSearchCV(tree_regressor, hyperparameters, cv=5, verbose=1, n_jobs=1)
-best_model = tree_reg_grid.fit(train_X, train_y)
+    # display best hyperparameters
+    print(best_model.best_estimator_)
 
-# View best hyperparameters
-print(best_model.best_estimator_)
+if __name__=='__main__':
+    main()
