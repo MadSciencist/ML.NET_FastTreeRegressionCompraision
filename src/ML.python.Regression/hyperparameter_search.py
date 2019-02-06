@@ -32,3 +32,11 @@ def main():
 
 if __name__=='__main__':
     main()
+
+
+
+    #DecisionTreeRegressor(criterion='mse', max_depth=10, max_features=None,
+    #       max_leaf_nodes=19, min_impurity_decrease=0.0,
+    #       min_impurity_split=None, min_samples_leaf=1,
+    #       min_samples_split=2, min_weight_fraction_leaf=0.0,
+    #       presort=False, random_state=0, splitter='best')

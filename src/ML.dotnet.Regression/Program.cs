@@ -1,15 +1,14 @@
-﻿using System;
-using ML.dotnet.Regression.Models;
+﻿using ML.dotnet.Regression.Models;
+using System;
 
 namespace ML.dotnet.Regression
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
             HousingRegression.Run();
             Console.Read();
-
         }
     }
 }

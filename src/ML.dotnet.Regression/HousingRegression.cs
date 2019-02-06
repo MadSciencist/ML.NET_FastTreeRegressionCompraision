@@ -1,22 +1,21 @@
 ﻿using Microsoft.ML;
+using Microsoft.ML.Runtime.Api;
 using Microsoft.ML.Runtime.Data;
-using Microsoft.ML.StaticPipe;
+using ML.dotnet.Regression.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.ML.Runtime.Api;
 
-namespace ML.dotnet.Regression.Models
+namespace ML.dotnet.Regression
 {
     public class HousingRegression
     {
         public static void Run()
         {
-            string _trainDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_train_70.csv");
-            string _testDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_test_30.csv");
-            string resultsPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\results", "dotnet_results.csv");
+            var trainDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_train_70.csv");
+            var testDataPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\datasets", "housing_test_30.csv");
+            var resultsPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\results", "dotnet_results.csv");
 
             var mlContext = new MLContext();
 
@@ -43,16 +42,20 @@ namespace ML.dotnet.Regression.Models
                     }
             });
 
-            var trainData = reader.Read(_trainDataPath);
-            var testData = reader.Read(_testDataPath);
+            var trainData = reader.Read(trainDataPath);
+            var testData = reader.Read(testDataPath);
 
-            //Build the training pipeline
+            // Build the training pipeline
+
+            // optimized hyper parameters
             //var pipeline = mlContext.Transforms.Concatenate("Features", "longitude", "latitude", "housing_median_age",
             //        "total_rooms", "total_bedrooms", "population",
             //        "households", "median_income", "<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
             //    .Append(mlContext.Regression.Trainers.FastTree(label: "median_house_value", features: "Features",
             //        numLeaves: 19, numTrees: 10, minDatapointsInLeafs: 1, learningRate: 0.2D));
 
+
+            // default hyper parameters
             var pipeline = mlContext.Transforms.Concatenate("Features", "longitude", "latitude", "housing_median_age",
                     "total_rooms", "total_bedrooms", "population",
                     "households", "median_income", "<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN")
@@ -61,8 +64,12 @@ namespace ML.dotnet.Regression.Models
             // Train the model
             var model = pipeline.Fit(trainData);
             // Now run the 5-fold cross-validation experiment, using the same pipeline
-            var cvResults = mlContext.Regression.CrossValidate(trainData, pipeline, numFolds: 10, labelColumn: "median_house_value");
 
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var cvResults = mlContext.Regression.CrossValidate(trainData, pipeline, numFolds: 10, labelColumn: "median_house_value");
+            watch.Stop();
+            Console.WriteLine($"Time [ms]: {watch.ElapsedMilliseconds}");
             var microAccuracies = cvResults.Select(r => r.metrics.RSquared);
             Console.WriteLine($"{microAccuracies.Average()} +-  {GetStandardDeviation(microAccuracies.ToList())}");
 
@@ -79,7 +86,6 @@ namespace ML.dotnet.Regression.Models
             Console.WriteLine($"*       RMS loss: {metrics.Rms:#.##}");
             Console.WriteLine($"*************************************************");
 
-
             /* evaluate model with train data */
             var evaluated = new List<Tuple<float, float>>();
             var predictor = model.MakePredictionFunction<HousingModel, HousingPrediction>(mlContext);
@@ -92,11 +98,9 @@ namespace ML.dotnet.Regression.Models
             }
 
             SaveCsv(resultsPath, evaluated);
-
-            Console.WriteLine("Done");
         }
 
-        private static void SaveCsv(string resultsPath, List<Tuple<float, float>> evaluated)
+        private static void SaveCsv(string resultsPath, IEnumerable<Tuple<float, float>> evaluated)
         {
             using (var file = File.CreateText(resultsPath))
             {
@@ -109,14 +113,16 @@ namespace ML.dotnet.Regression.Models
             }
         }
 
-        private static double GetStandardDeviation(List<double> doubleList)
+        private static double GetStandardDeviation(IReadOnlyCollection<double> doubleList)
         {
             var average = doubleList.Average();
             var sumOfDerivation = 0.0;
+
             foreach (var value in doubleList)
             {
                 sumOfDerivation += (value) * (value);
             }
+
             var sumOfDerivationAverage = sumOfDerivation / (doubleList.Count);
 
             return Math.Sqrt(sumOfDerivationAverage - (average * average));

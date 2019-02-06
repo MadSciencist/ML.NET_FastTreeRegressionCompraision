@@ -8,6 +8,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV
 from utils import plot_learning_curve
+import time
 
 train_set = pd.read_csv('../../datasets/housing_train_70.csv')
 test_set = pd.read_csv('../../datasets/housing_test_30.csv')
@@ -17,11 +18,15 @@ train_X = train_set.drop('median_house_value', axis=1)
 test_y = test_set['median_house_value']
 test_X = test_set.drop('median_house_value', axis=1)
 
+#tree_regressor = DecisionTreeRegressor(random_state=0, max_depth=10, min_samples_leaf=1, max_leaf_nodes=19)
 tree_regressor = DecisionTreeRegressor(random_state=0)
 
+
+start = time.clock()
 tree_regressor.fit(train_X, train_y)
 score = cross_val_score(tree_regressor, train_X, train_y, cv=10)
-print(f'{score.mean()} += {score.std()}')
+end = time.clock()
+print(f'{score.mean()} += {score.std()}, time: {end-start}')
 
 # evaluate score
 y_pred = tree_regressor.predict(test_X)
